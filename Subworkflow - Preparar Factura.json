@@ -1,0 +1,74 @@
+{
+  "name": "Subworkflow - Preparar Factura",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ec1d1453-8eb8-4bbf-85f8-cfe1b6838bb0",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "212a74c6-ef16-4641-9f90-280c163524ad",
+              "name": "estado_limpio",
+              "value": "={{ $json.estado.toLowerCase().trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "eba54f9d-8897-4289-b7d8-c82db4de196e",
+              "name": "cliente_limpio",
+              "value": "={{ $json.cliente.trim() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "89c0df6d-aa1d-4a62-828b-c943eeea9a5a",
+      "name": "Limpiar Estado y Cliente"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Limpiar Estado y Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "2d8a6482-ae75-497b-92b9-68d4ec07253d",
+  "meta": {
+    "instanceId": "d8f12abc7bbb73b2fa06d13627dd035e28a678b316524fd5e67f92b603faf846"
+  },
+  "id": "AK9Vpc1DHAS6QjJF",
+  "tags": []
+}

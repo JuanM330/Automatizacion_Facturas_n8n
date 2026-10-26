@@ -1,0 +1,923 @@
+{
+  "name": "facturas-21/10",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Registro factura",
+        "formDescription": "Ingresa los datos de la factura a revisar",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "numero_factura"
+            },
+            {
+              "fieldLabel": "cliente"
+            },
+            {
+              "fieldLabel": "monto"
+            },
+            {
+              "fieldLabel": "estado"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -384,
+        -128
+      ],
+      "id": "711340e7-1655-4fcd-a3d2-d7eb5d591d72",
+      "name": "Entrada: Formulario Factura",
+      "webhookId": "6f99dbd0-e391-4125-a101-4c34f516947d"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        112
+      ],
+      "id": "f52e81d8-9d3a-4749-a6a1-82a8f8e9cd06",
+      "name": "\tEntrada: Prueba Manual"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dc230618-106d-45a1-9e7d-0af7626322d3",
+              "name": "estado",
+              "value": "={{ $json.estado }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        -128
+      ],
+      "id": "0a80eded-8d92-4112-b2dd-0152c1402c1c",
+      "name": "Recibir Datos Factura"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "46e339f1-ebe5-4054-a247-6b885e996be2",
+              "leftValue": "={{ $json.estado_limpio }}",
+              "rightValue": "completa",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        512,
+        -128
+      ],
+      "id": "b319c985-5738-4b34-9598-62c76d9b9e0d",
+      "name": "\t¿Factura Completa?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "24cb1b70-9eb7-46bf-ac93-02037fdde252",
+              "name": "asunto",
+              "value": "={{ \"Factura \" + $json.numero_factura + \" procesada\" }}",
+              "type": "string"
+            },
+            {
+              "id": "b76f738d-6c59-4820-9591-9e34e76608ba",
+              "name": "cuerpo",
+              "value": "={{ \"La factura \" + $json.numero_factura + \" del cliente \" + $json.cliente_limpio + \" por $\" + $json.monto + \" quedó en estado: \" + $json.estado_limpio }}",
+              "type": "string"
+            },
+            {
+              "id": "52d0385d-c8fe-4bfc-8c04-c26a08597db1",
+              "name": "fila_hoja",
+              "value": "={{ $json.numero_factura + \" | \" + $json.cliente_limpio + \" | \" + $json.monto + \" | \" + $json.estado_limpio }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        864,
+        -288
+      ],
+      "id": "c0d3699c-54b4-4279-9924-9f1c68713c0a",
+      "name": "Armar Salida (Completa)"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "24cb1b70-9eb7-46bf-ac93-02037fdde252",
+              "name": "asunto",
+              "value": "={{ \"Factura \" + $json.numero_factura + \" procesada\" }}",
+              "type": "string"
+            },
+            {
+              "id": "b76f738d-6c59-4820-9591-9e34e76608ba",
+              "name": "cuerpo",
+              "value": "={{ \"La factura \" + $json.numero_factura + \" del cliente \" + $json.cliente_limpio + \" por $\" + $json.monto + \" quedó en estado: \" + $json.estado_limpio }}",
+              "type": "string"
+            },
+            {
+              "id": "52d0385d-c8fe-4bfc-8c04-c26a08597db1",
+              "name": "fila_hoja",
+              "value": "={{ $json.numero_factura + \" | \" + $json.cliente_limpio + \" | \" + $json.monto + \" | \" + $json.estado_limpio }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        864,
+        16
+      ],
+      "id": "24e72ca3-7e62-42c2-b1e0-afddaea83998",
+      "name": "\tArmar Salida (Incompleta)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.baserow.io/api/database/rows/table/1227753/",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "user_field_names",
+              "value": "true"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Token YJ7IwPVxjUNvecCkwNVYOwCQHuLajYhQ"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "numero_factura",
+              "value": "={{ $json.numero_factura }}"
+            },
+            {
+              "name": "cliente",
+              "value": "={{ $json.cliente_limpio }}"
+            },
+            {
+              "name": "monto",
+              "value": "=\t{{ $json.monto }}"
+            },
+            {
+              "name": "estado",
+              "value": "={{ $json.estado_limpio }}"
+            },
+            {
+              "name": "detalle",
+              "value": "=\t{{ $json.cuerpo }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1104,
+        -128
+      ],
+      "id": "5e383945-0e6a-40ec-a7c5-f7397313b206",
+      "name": "\tGuardar en Baserow (BASE DE DATOS)",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"facturas\": [\n    { \"numero_factura\": \"FAC-001\", \"cliente\": \"Alexis Bedoya\", \"monto\": 250000, \"estado\": \"completa\" },\n    { \"numero_factura\": \"FAC-002\", \"cliente\": \"Ana Diaz\", \"monto\": 180000, \"estado\": \"incompleta\" },\n    { \"numero_factura\": \"FAC-003\", \"cliente\": \"Luis Rios\", \"monto\": 320000, \"estado\": \"completa\" },\n    { \"numero_factura\": \"FAC-004\", \"cliente\": \"Marta Ruiz\", \"monto\": 95000, \"estado\": \"incompleta\" }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -112,
+        256
+      ],
+      "id": "4084ce67-011c-4e7e-ba0c-1ce6b04c0c87",
+      "name": "Lista de Prueba (4 Facturas)"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "facturas",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        80,
+        256
+      ],
+      "id": "dfbc6370-4625-402f-9759-25b7e439c664",
+      "name": "Separar Facturas"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "8019c014-81a0-4f7c-bc51-5374cacb3562",
+              "leftValue": "={{ $json.estado }}",
+              "rightValue": "incompleta",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        288,
+        256
+      ],
+      "id": "d7ff680b-53ef-4e30-93e7-a0cbd7d16579",
+      "name": "Filtrar Incompletas"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "factura-c08",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -512,
+        -432
+      ],
+      "id": "214b0760-3612-437a-863c-bf2f715e7fbb",
+      "name": "Webhook",
+      "webhookId": "f4c45f7b-2102-45cf-921c-8ad1aa19a2d2",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "3y1r0UUdcPh3pfPW",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3f3554a2-f850-4e29-a9ba-c506375172a5",
+              "leftValue": "={{ !!($json.body.numero_factura && $json.body.cliente && $json.body.monto && $json.body.estado) }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -288,
+        -432
+      ],
+      "id": "9066ca9f-5937-494a-8f5b-567d6e02646d",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"error\": true, \"mensaje\": \"Faltan campos obligatorios: numero_factura, cliente, monto o estado\" } }}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        480,
+        -272
+      ],
+      "id": "c5b4c6dc-9a04-4c1c-99aa-7fdc2eef1fca",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "47b5dd59-ba4e-418b-8462-57d0a918f7a5",
+              "name": "numero_factura",
+              "value": "={{ $json.body.numero_factura }}",
+              "type": "string"
+            },
+            {
+              "id": "f010259e-bb4b-442d-82e7-615e244aa86f",
+              "name": "cliente",
+              "value": "={{ $json.body.cliente }}",
+              "type": "string"
+            },
+            {
+              "id": "5d74b86c-b738-4c4e-8a0e-fa5b4fa7762f",
+              "name": "monto",
+              "value": "={{ $json.body.monto }}",
+              "type": "number"
+            },
+            {
+              "id": "1053b51b-c5a0-4ccd-a524-519d93c199c2",
+              "name": "estado",
+              "value": "=\t{{ $json.body.estado }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        -528
+      ],
+      "id": "4dd551e7-fa39-4097-ad6c-da0d97c097a3",
+      "name": "Normalizar Entrada Webhook"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"ok\": true, \"mensaje\": \"Factura procesada y guardada en Baserow\" } }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1360,
+        -160
+      ],
+      "id": "3726864a-d410-4295-a7d7-2804e513fb1f",
+      "name": "Responder Ok"
+    },
+    {
+      "parameters": {
+        "url": "https://api.baserow.io/api/database/rows/table/1227753/",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "user_field_names",
+              "value": "true"
+            },
+            {
+              "name": "filter__numero_factura__equal",
+              "value": "={{ $json.numero_factura }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Token YJ7IwPVxjUNvecCkwNVYOwCQHuLajYhQ"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        480,
+        -528
+      ],
+      "id": "8e2b970d-e18d-4e6e-af5e-37366d49fe9f",
+      "name": "Buscar Duplicado"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b5c336a3-0cde-415c-aba4-93f638d7bfcc",
+              "leftValue": "={{ $json.count }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        768,
+        -528
+      ],
+      "id": "6d591d86-6d44-4c94-9ab7-0e76a49b0b04",
+      "name": "¿factura nueva?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eeb8cfc3-6165-4169-9638-f7133b273353",
+              "name": "numero_factura",
+              "value": "={{ $('Normalizar Entrada Webhook').item.json.numero_factura }}",
+              "type": "string"
+            },
+            {
+              "id": "54d3d69e-e72e-466f-a4b8-7e4f63107fed",
+              "name": "cliente",
+              "value": "={{ $('Normalizar Entrada Webhook').item.json.cliente }}",
+              "type": "string"
+            },
+            {
+              "id": "d1430501-b71a-40f7-b777-dec754bbe549",
+              "name": "monto",
+              "value": "={{ $('Normalizar Entrada Webhook').item.json.monto }}",
+              "type": "number"
+            },
+            {
+              "id": "2265f1c1-94a0-4849-817f-11f132dda3de",
+              "name": "estado",
+              "value": "={{ $('Normalizar Entrada Webhook').item.json.estado }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1136,
+        -512
+      ],
+      "id": "e1428ceb-e9c8-4a51-afd8-f56922eb447c",
+      "name": "Restaurar Datos de Factura"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"ok\": false, \"duplicada\": true, \"mensaje\": \"La factura \" + $('Normalizar Entrada Webhook').item.json.numero_factura + \" ya fue registrada\" } }}",
+        "options": {
+          "responseCode": 409
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1312,
+        -304
+      ],
+      "id": "4f8d5740-40a8-475f-9969-fb49f95659cb",
+      "name": "Responder Duplicada"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "AK9Vpc1DHAS6QjJF",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/AK9Vpc1DHAS6QjJF",
+          "cachedResultName": "Subworkflow - Preparar Factura"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        288,
+        -128
+      ],
+      "id": "606009f3-f985-494d-802c-83cbd9c65da3",
+      "name": "Llamar preparar factura"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"ok\": false,\n  \"mensaje\": \"No se pudo guardar la factura en Baserow. Queda pendiente de revisión.\"\n}",
+        "options": {
+          "responseCode": 502
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1376,
+        0
+      ],
+      "id": "39932598-febb-4330-ba89-f1c8d4dd85fd",
+      "name": "Responder Fallo"
+    },
+    {
+      "parameters": {
+        "errorMessage": "Fallo al guardar la factura en Baserow"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1584,
+        0
+      ],
+      "id": "3794321d-71f7-470d-9fe7-4e3f6ee8b06c",
+      "name": "Marcar ejecucion fallida"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "be535cf3-4d3a-4fe9-ae62-ea1020cf35ba",
+              "leftValue": "={{ $json.body.forzar_error !== true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        64,
+        -512
+      ],
+      "id": "bc0132b2-11ed-4afc-a84b-7ae2fad68fd5",
+      "name": "¿entrada normal?"
+    },
+    {
+      "parameters": {
+        "errorMessage": "Fallo controlado del laboratorio"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        -272
+      ],
+      "id": "27508ba2-eedf-4b69-ad0b-289daaeba333",
+      "name": "fallo prueba"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Entrada: Formulario Factura": {
+      "main": [
+        [
+          {
+            "node": "Recibir Datos Factura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "\tEntrada: Prueba Manual": {
+      "main": [
+        [
+          {
+            "node": "Lista de Prueba (4 Facturas)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Recibir Datos Factura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recibir Datos Factura": {
+      "main": [
+        [
+          {
+            "node": "Llamar preparar factura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "\t¿Factura Completa?": {
+      "main": [
+        [
+          {
+            "node": "Armar Salida (Completa)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "\tArmar Salida (Incompleta)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Armar Salida (Completa)": {
+      "main": [
+        [
+          {
+            "node": "\tGuardar en Baserow (BASE DE DATOS)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "\tArmar Salida (Incompleta)": {
+      "main": [
+        [
+          {
+            "node": "\tGuardar en Baserow (BASE DE DATOS)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lista de Prueba (4 Facturas)": {
+      "main": [
+        [
+          {
+            "node": "Separar Facturas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Separar Facturas": {
+      "main": [
+        [
+          {
+            "node": "Filtrar Incompletas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "¿entrada normal?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar Entrada Webhook": {
+      "main": [
+        [
+          {
+            "node": "Buscar Duplicado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "\tGuardar en Baserow (BASE DE DATOS)": {
+      "main": [
+        [
+          {
+            "node": "Responder Ok",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder Fallo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Duplicado": {
+      "main": [
+        [
+          {
+            "node": "¿factura nueva?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿factura nueva?": {
+      "main": [
+        [
+          {
+            "node": "Restaurar Datos de Factura",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder Duplicada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restaurar Datos de Factura": {
+      "main": [
+        [
+          {
+            "node": "Recibir Datos Factura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Llamar preparar factura": {
+      "main": [
+        [
+          {
+            "node": "\t¿Factura Completa?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Responder Fallo": {
+      "main": [
+        [
+          {
+            "node": "Marcar ejecucion fallida",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿entrada normal?": {
+      "main": [
+        [
+          {
+            "node": "Normalizar Entrada Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "fallo prueba",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "rBGEQSj6WcZvMAyN",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "d4ddb29b-950d-493c-9406-3f4426720807",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d8f12abc7bbb73b2fa06d13627dd035e28a678b316524fd5e67f92b603faf846"
+  },
+  "id": "AVoWDgL5osunaOdm",
+  "tags": []
+}

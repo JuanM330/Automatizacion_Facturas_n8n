@@ -1,0 +1,205 @@
+{
+  "name": "Manejador de errores facturas",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "b5ac3a2e-897d-49ba-a88b-b1107b0e339b",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.baserow.io/api/database/rows/table/1282418/",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "user_field_names",
+              "value": "true"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Token YJ7IwPVxjUNvecCkwNVYOwCQHuLajYhQ"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "fecha",
+              "value": "={{ $json.fecha }}"
+            },
+            {
+              "name": "workflow",
+              "value": "={{ $json.workflow }}"
+            },
+            {
+              "name": "nodo",
+              "value": "={{ $json.nodo }}"
+            },
+            {
+              "name": "mensaje",
+              "value": "={{ $json.mensaje }}"
+            },
+            {
+              "name": "ejecucion",
+              "value": "={{ $json.ejecucion }}"
+            },
+            {
+              "name": "estado_atencion",
+              "value": "={{ $json.estado_atencion }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        416,
+        0
+      ],
+      "id": "169d9134-363f-4b6d-9296-56f628acf78d",
+      "name": "Guardar Incidente en Baserow"
+    },
+    {
+      "parameters": {
+        "authentication": "webhook",
+        "content": "={{ 'Facturas: falló el workflow ' + $('Preparar Incidente').item.json.workflow + ' en el nodo ' + $('Preparar Incidente').item.json.nodo + '. Revisar la ejecución ' + $('Preparar Incidente').item.json.ejecucion + ' y la tabla Incidentes.' }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "0da0da19-78d3-4d17-b705-742bf9c5c7fe",
+      "name": "Discord",
+      "webhookId": "d4316810-e18a-4524-a90d-108d6485fa31",
+      "credentials": {
+        "discordWebhookApi": {
+          "id": "IJz2tIPy6f3B50eM",
+          "name": "Discord Webhook account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4081740a-76be-43a6-959c-5f02c4b31e59",
+              "name": "fecha",
+              "value": "={{ $now.toFormat('yyyy-MM-dd HH:mm:ss') }}",
+              "type": "string"
+            },
+            {
+              "id": "56737a1c-df5b-4950-9a80-20ad6da12d7f",
+              "name": "workflow",
+              "value": "={{ $json.workflow.name }}",
+              "type": "string"
+            },
+            {
+              "id": "e7a6eda6-7a71-4651-b315-cc12611b5030",
+              "name": "nodo",
+              "value": "={{ $json.execution.lastNodeExecuted }}",
+              "type": "string"
+            },
+            {
+              "id": "8022dd7d-596d-43ad-b4a4-1d3b4e162abf",
+              "name": "mensaje",
+              "value": "={{ $json.execution.error.message }}",
+              "type": "string"
+            },
+            {
+              "id": "a09f30d2-92ae-4166-8482-720eb1f03b52",
+              "name": "=ejecucion",
+              "value": "={{ $json.execution.id }}",
+              "type": "string"
+            },
+            {
+              "id": "dcf4dd75-df6d-4738-8a86-718cf4ab1aef",
+              "name": "estado_atencion",
+              "value": "pendiente",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "6e1da488-bb8a-4722-a641-3e7cc376b5e7",
+      "name": "Preparar Incidente"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Preparar Incidente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Incidente en Baserow": {
+      "main": [
+        [
+          {
+            "node": "Discord",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Incidente": {
+      "main": [
+        [
+          {
+            "node": "Guardar Incidente en Baserow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "America/Bogota",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "dc8e724d-835d-470f-932c-e096de0fc1ea",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d8f12abc7bbb73b2fa06d13627dd035e28a678b316524fd5e67f92b603faf846"
+  },
+  "id": "rBGEQSj6WcZvMAyN",
+  "tags": []
+}
